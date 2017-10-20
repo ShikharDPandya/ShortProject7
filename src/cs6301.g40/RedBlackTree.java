@@ -30,6 +30,7 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BST<T> {
 	RedBlackTree() {
 		super();
 		nullNode = new Entry<T>(null, nullNode, nullNode, nullNode, false);
+		root = nullNode;
 	}
 
 	//function to add a new node and fix the structure of tree maintaining
@@ -37,7 +38,7 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BST<T> {
 	public boolean add(T x) {
 		Entry<T> temp = root;
 		boolean isAdded = false;
-		if (root == null || root == nullNode) {
+		if (root == nullNode) {
 			Entry<T> node = new Entry<T>(x, nullNode, nullNode, nullNode, false);
 			root = node;
 			size++;
@@ -91,11 +92,11 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BST<T> {
 				}
 				if (node == node.parent.right) {
 					node = node.parent;
-					rotateLeft(node);
+					leftRotate(node);
 				}
 				node.parent.isRed = false;
 				node.parent.parent.isRed = true;
-				rotateRight(node.parent.parent);
+				rightRotate(node.parent.parent);
 			} else {
 				uncle = (Entry<T>) node.parent.parent.left;
 				if (uncle != nullNode && uncle.isRed) {
@@ -107,35 +108,35 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BST<T> {
 				}
 				if (node == node.parent.left) {
 					node = node.parent;
-					rotateRight(node);
+					rightRotate(node);
 				}
 				node.parent.isRed = false;
 				node.parent.parent.isRed = true;
-				rotateLeft(node.parent.parent);
+				leftRotate(node.parent.parent);
 			}
 		}
 		root.isRed = false;
 	}
 
 	//rotate left the node to maintain height balance
-	void rotateLeft(Entry<T> node) {
+	private void leftRotate(Entry<T> node) {
 		if (node.parent != nullNode) {
 			if (node == node.parent.left) {
 				node.parent.left = node.right;
 			} else {
 				node.parent.right = node.right;
 			}
-			((RedBlackTree.Entry<T>) node.right).parent = node.parent;
+			((Entry<T>) node.right).parent = node.parent;
 			node.parent = (Entry<T>) node.right;
 			if (node.right.left != nullNode) {
-				((RedBlackTree.Entry<T>) node.right.left).parent = node;
+				((Entry<T>) node.right.left).parent = node;
 			}
 			node.right = node.right.left;
 			node.parent.left = node;
 		} else {
 			Entry<T> right = (Entry<T>) root.right;
 			root.right = right.left;
-			((RedBlackTree.Entry<T>) right.left).parent = root;
+			((Entry<T>) right.left).parent = root;
 			root.parent = right;
 			right.left = root;
 			right.parent = nullNode;
@@ -144,7 +145,7 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BST<T> {
 	}
 
 	//rotate right once to maintain height balance
-	void rotateRight(Entry<T> node) {
+	private void rightRotate(Entry<T> node) {
 		if (node.parent != nullNode) {
 			if (node == node.parent.left) {
 				node.parent.left = node.left;
@@ -152,17 +153,17 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BST<T> {
 				node.parent.right = node.left;
 			}
 
-			((RedBlackTree.Entry<T>) node.left).parent = node.parent;
+			((Entry<T>) node.left).parent = node.parent;
 			node.parent = (Entry<T>) node.left;
 			if (node.left.right != nullNode) {
-				((RedBlackTree.Entry<T>) node.left.right).parent = node;
+				((Entry<T>) node.left.right).parent = node;
 			}
 			node.left = node.left.right;
 			node.parent.right = node;
 		} else {
 			Entry<T> left = (Entry<T>) root.left;
 			root.left = root.left.right;
-			((RedBlackTree.Entry<T>) left.right).parent = root;
+			((Entry<T>) left.right).parent = root;
 			root.parent = left;
 			left.right = root;
 			left.parent = nullNode;
@@ -172,8 +173,8 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BST<T> {
 
 	//search for a node in the tree and return if exists
 	private Entry<T> find(T x, Entry<T> node) {
-		if (root == null || root == nullNode) {
-			return null;
+		if (root == nullNode) {
+			return nullNode;
 		}
 
 		if (x.compareTo(node.element) < 0) {
@@ -187,14 +188,14 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BST<T> {
 		} else if (x.compareTo(node.element) == 0) {
 			return node;
 		}
-		return null;
+		return nullNode;
 	}
 
 	//function to remove a node by finding the inoder successor of a node and then
 	//then fixing the tree structure 
 	public T remove(T x) {
 		Entry<T> z = find(x, root);
-		if (z == null)
+		if (z == nullNode)
 			return null;
 		Entry<T> temp;
 		Entry<T> y = z;
@@ -215,11 +216,11 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BST<T> {
 			else {
 				replace(y, (Entry<T>) y.right);
 				y.right = z.right;
-				((RedBlackTree.Entry<T>) y.right).parent = y;
+				((Entry<T>) y.right).parent = y;
 			}
 			replace(z, y);
 			y.left = z.left;
-			((RedBlackTree.Entry<T>) y.left).parent = y;
+			((Entry<T>) y.left).parent = y;
 			y.isRed = z.isRed;
 		}
 		if (!yInitialColor)
@@ -237,24 +238,24 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BST<T> {
 				if (w.isRed) {
 					w.isRed = false;
 					node.parent.isRed = true;
-					rotateLeft(node.parent);
+					leftRotate(node.parent);
 					w = (Entry<T>) node.parent.right;
 				}
-				if (!((RedBlackTree.Entry<T>) w.left).isRed && !((RedBlackTree.Entry<T>) w.right).isRed) {
+				if (!((Entry<T>) w.left).isRed && !((Entry<T>) w.right).isRed) {
 					w.isRed = true;
 					node = node.parent;
 					continue;
-				} else if (!((RedBlackTree.Entry<T>) w.right).isRed) {
-					((RedBlackTree.Entry<T>) w.left).isRed = false;
+				} else if (!((Entry<T>) w.right).isRed) {
+					((Entry<T>) w.left).isRed = false;
 					w.isRed = true;
-					rotateRight(w);
+					rightRotate(w);
 					w = (Entry<T>) node.parent.right;
 				}
-				if (((RedBlackTree.Entry<T>) w.right).isRed) {
+				if (((Entry<T>) w.right).isRed) {
 					w.isRed = node.parent.isRed;
 					node.parent.isRed = false;
-					((RedBlackTree.Entry<T>) w.right).isRed = false;
-					rotateLeft(node.parent);
+					((Entry<T>) w.right).isRed = false;
+					leftRotate(node.parent);
 					node = root;
 				}
 			} else {
@@ -262,24 +263,24 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BST<T> {
 				if (w.isRed) {
 					w.isRed = false;
 					node.parent.isRed = true;
-					rotateRight(node.parent);
+					rightRotate(node.parent);
 					w = (Entry<T>) node.parent.left;
 				}
-				if (!((RedBlackTree.Entry<T>) w.right).isRed && !((RedBlackTree.Entry<T>) w.left).isRed) {
+				if (!((Entry<T>) w.right).isRed && !((Entry<T>) w.left).isRed) {
 					w.isRed = true;
 					node = node.parent;
 					continue;
-				} else if (!((RedBlackTree.Entry<T>) w.left).isRed) {
-					((RedBlackTree.Entry<T>) w.right).isRed = false;
+				} else if (!((Entry<T>) w.left).isRed) {
+					((Entry<T>) w.right).isRed = false;
 					w.isRed = true;
-					rotateLeft(w);
+					leftRotate(w);
 					w = (Entry<T>) node.parent.left;
 				}
-				if (((RedBlackTree.Entry<T>) w.left).isRed) {
+				if (((Entry<T>) w.left).isRed) {
 					w.isRed = node.parent.isRed;
 					node.parent.isRed = false;
-					((RedBlackTree.Entry<T>) w.left).isRed = false;
-					rotateRight(node.parent);
+					((Entry<T>) w.left).isRed = false;
+					rightRotate(node.parent);
 					node = root;
 				}
 			}
