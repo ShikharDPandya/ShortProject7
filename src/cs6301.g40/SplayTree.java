@@ -5,6 +5,8 @@ package cs6301.g40;
 import java.util.Comparator;
 import java.util.Scanner;
 
+import cs6301.g40.RedBlackTree.Entry;
+
 
 
 public class SplayTree<T extends Comparable<? super T>> extends BST<T> {
@@ -27,6 +29,7 @@ public class SplayTree<T extends Comparable<? super T>> extends BST<T> {
 		root = nullNode;
 	}
 
+	//add a node to the splay tree and call the splay function
 	public boolean add(T x) {
 		Entry<T> temp = root;
 		boolean isAdded = false;
@@ -36,7 +39,7 @@ public class SplayTree<T extends Comparable<? super T>> extends BST<T> {
 			size++;
 			isAdded = true;
 		} else {
-			while (true) {
+			while (temp != nullNode) {
 				if (x.compareTo(temp.element) < 0) {
 					if (temp.left == nullNode) {
 						temp.left = node;
@@ -68,6 +71,7 @@ public class SplayTree<T extends Comparable<? super T>> extends BST<T> {
 		return isAdded;
 	}
 
+	//perform splay in the node
 	private void performSplay(Entry<T> node) {
 		// TODO Auto-generated method stub
 		while (node.parent != nullNode) {
@@ -124,13 +128,13 @@ public class SplayTree<T extends Comparable<? super T>> extends BST<T> {
 		return nullNode;
 	}
 
+	//remove a node from the tree and perform the splay function
 	public T remove(T x) {
 		Entry<T> z = find(x, root);
 		if (z == nullNode)
 			return null;
-		performSplay(z);
 		Entry<T> temp;
-		Entry<T> y = z;
+		Entry<T> inOrderSucc;
 
 		if (z.left == nullNode) {
 			temp = (Entry<T>) z.right;
@@ -139,18 +143,18 @@ public class SplayTree<T extends Comparable<? super T>> extends BST<T> {
 			temp = (Entry<T>) z.left;
 			replace(z, (Entry<T>) z.left);
 		} else {
-			y = inOrderSuccessor((Entry<T>) z.right);
-			temp = (Entry<T>) y.right;
-			if (y.parent == z)
-				temp.parent = y;
+			inOrderSucc = inOrderSuccessor((Entry<T>) z.right);
+			temp = (Entry<T>) inOrderSucc.right;
+			if (inOrderSucc.parent == z)
+				temp.parent = inOrderSucc;
 			else {
-				replace(y, (Entry<T>) y.right);
-				y.right = z.right;
-				((Entry<T>) y.right).parent = y;
+				replace(inOrderSucc, (Entry<T>) inOrderSucc.right);
+				inOrderSucc.right = z.right;
+				((Entry<T>) inOrderSucc.right).parent = inOrderSucc;
 			}
-			replace(z, y);
-			y.left = z.left;
-			((Entry<T>) y.left).parent = y;
+			replace(z, inOrderSucc);
+			inOrderSucc.left = z.left;
+			((Entry<T>) inOrderSucc.left).parent = inOrderSucc;
 		}
 		size--;
 		return x;

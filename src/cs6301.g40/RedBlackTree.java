@@ -45,7 +45,7 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BST<T> {
 			isAdded = true;
 		} else {
 			Entry<T> node = new Entry<T>(x, nullNode, nullNode, nullNode, true);
-			while (true) {
+			while (temp != nullNode) {
 				if (x.compareTo(temp.element) < 0) {
 					if (temp.left == nullNode) {
 						temp.left = node;
@@ -191,15 +191,15 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BST<T> {
 		return nullNode;
 	}
 
-	//function to remove a node by finding the inoder successor of a node and then
+	//function to remove a node by finding the inorder successor of a node and then
 	//then fixing the tree structure 
 	public T remove(T x) {
 		Entry<T> z = find(x, root);
 		if (z == nullNode)
 			return null;
 		Entry<T> temp;
-		Entry<T> y = z;
-		boolean yInitialColor = y.isRed;
+		Entry<T> inOrderSucc;
+		boolean tempColor = false;
 
 		if (z.left == nullNode) {
 			temp = (Entry<T>) z.right;
@@ -208,22 +208,22 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BST<T> {
 			temp = (Entry<T>) z.left;
 			replace(z, (Entry<T>) z.left);
 		} else {
-			y = inOrderSuccessor((Entry<T>) z.right);
-			yInitialColor = y.isRed;
-			temp = (Entry<T>) y.right;
-			if (y.parent == z)
-				temp.parent = y;
+			inOrderSucc = inOrderSuccessor((Entry<T>) z.right);
+			tempColor = inOrderSucc.isRed;
+			temp = (Entry<T>) inOrderSucc.right;
+			if (inOrderSucc.parent == z)
+				temp.parent = inOrderSucc;
 			else {
-				replace(y, (Entry<T>) y.right);
-				y.right = z.right;
-				((Entry<T>) y.right).parent = y;
+				replace(inOrderSucc, (Entry<T>) inOrderSucc.right);
+				inOrderSucc.right = z.right;
+				((Entry<T>) inOrderSucc.right).parent = inOrderSucc;
 			}
-			replace(z, y);
-			y.left = z.left;
-			((Entry<T>) y.left).parent = y;
-			y.isRed = z.isRed;
+			replace(z, inOrderSucc);
+			inOrderSucc.left = z.left;
+			((Entry<T>) inOrderSucc.left).parent = inOrderSucc;
+			inOrderSucc.isRed = z.isRed;
 		}
-		if (!yInitialColor)
+		if (!tempColor)
 			fixStructureAfterDelete(temp);
 		size--;
 		return x;
@@ -297,14 +297,14 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BST<T> {
 	}
 
 	//replace a nnode with another
-	public void replace(Entry<T> target, Entry<T> with) {
-		if (target.parent == nullNode) {
-			root = with;
-		} else if (target == target.parent.left) {
-			target.parent.left = with;
+	public void replace(Entry<T> toNode, Entry<T> withNode) {
+		if (toNode.parent == nullNode) {
+			root = withNode;
+		} else if (toNode == toNode.parent.left) {
+			toNode.parent.left = withNode;
 		} else
-			target.parent.right = with;
-		with.parent = target.parent;
+			toNode.parent.right = withNode;
+		withNode.parent = toNode.parent;
 	}
 
 	public static void main(String[] args) {
