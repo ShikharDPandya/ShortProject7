@@ -14,13 +14,13 @@ import java.util.Comparator;
 import java.util.Scanner;
 
 import cs6301.g40.BST;
-import cs6301.g40.BST.Entry;
 
 public class RedBlackTree<T extends Comparable<? super T>> extends BST<T> {
 	// create nullnode with color black;
 	Entry<T> nullNode;
 	Entry<T> root;
 	int size;
+	int index = 0;
 
 	static class Entry<T> extends BST.Entry<T> {
 		boolean isRed;
@@ -33,15 +33,15 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BST<T> {
 		}
 	}
 
-	//initialize a sentinel node with a black node
+	// initialize a sentinel node with a black node
 	RedBlackTree() {
 		super();
 		nullNode = new Entry<T>(null, nullNode, nullNode, nullNode, false);
 		root = nullNode;
 	}
 
-	//function to add a new node and fix the structure of tree maintaining
-	//the black height of left and right subtrees
+	// function to add a new node and fix the structure of tree maintaining
+	// the black height of left and right subtrees
 	public boolean add(T x) {
 		Entry<T> temp = root;
 		boolean isAdded = false;
@@ -125,7 +125,7 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BST<T> {
 		root.isRed = false;
 	}
 
-	//rotate left the node to maintain height balance
+	// rotate left the node to maintain height balance
 	private void leftRotate(Entry<T> node) {
 		if (node.parent != nullNode) {
 			if (node == node.parent.left) {
@@ -151,7 +151,7 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BST<T> {
 		}
 	}
 
-	//rotate right once to maintain height balance
+	// rotate right once to maintain height balance
 	private void rightRotate(Entry<T> node) {
 		if (node.parent != nullNode) {
 			if (node == node.parent.left) {
@@ -178,7 +178,7 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BST<T> {
 		}
 	}
 
-	//search for a node in the tree and return if exists
+	// search for a node in the tree and return if exists
 	private Entry<T> find(T x, Entry<T> node) {
 		if (root == nullNode) {
 			return nullNode;
@@ -198,8 +198,9 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BST<T> {
 		return nullNode;
 	}
 
-	//function to remove a node by finding the inorder successor of a node and then
-	//then fixing the tree structure 
+	// function to remove a node by finding the inorder successor of a node and
+	// then
+	// then fixing the tree structure
 	public T remove(T x) {
 		Entry<T> node = find(x, root);
 		if (node == nullNode)
@@ -237,7 +238,7 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BST<T> {
 
 	}
 
-	//fix the tree structure keeping note of the sibling color
+	// fix the tree structure keeping note of the sibling color
 	private void fixStructureAfterDelete(Entry<T> node) {
 		while (node != root && !node.isRed) {
 			if (node == node.parent.left) {
@@ -295,7 +296,7 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BST<T> {
 		node.isRed = false;
 	}
 
-	//function to find the inorder successor of a node
+	// function to find the inorder successor of a node
 	private Entry<T> inOrderSuccessor(Entry<T> node) {
 		while (node.left != nullNode) {
 			node = (Entry<T>) node.left;
@@ -303,7 +304,7 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BST<T> {
 		return node;
 	}
 
-	//replace a nnode with another
+	// replace a nnode with another
 	public void replace(Entry<T> toNode, Entry<T> withNode) {
 		if (toNode.parent == nullNode) {
 			root = withNode;
@@ -315,7 +316,7 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BST<T> {
 	}
 
 	public static void main(String[] args) {
-		BST<Integer> t = new RedBlackTree<>();
+		RedBlackTree<Integer> t = new RedBlackTree<>();
 		Scanner in = new Scanner(System.in);
 		while (in.hasNext()) {
 			int x = in.nextInt();
@@ -327,9 +328,56 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BST<T> {
 				System.out.print("Remove " + x + " : ");
 				t.remove(-x);
 				t.printTree();
+			} else {
+				Comparable[] arr = t.toArray();
+				System.out.print("Final: ");
+				for (int i = 0; i < t.size; i++) {
+					System.out.print(arr[i] + " ");
+				}
+				System.out.println();
+				return;
 			}
 		}
 		in.close();
+	}
+
+	public Comparable[] toArray() {
+		Comparable[] arr = new Comparable[size];
+		/* write code to place elements in array here */
+		storeInArray(root, arr);
+		return arr;
+	}
+
+	/**
+	 * TO DO: Is x contained in tree?
+	 */
+	public boolean contains(T x) {
+		Entry<T> node = find(x, root);
+		if (node == nullNode)
+			return false;
+		return true;
+	}
+	
+	/**
+	 * TO DO: Is there an element that is equal to x in the tree? Element in
+	 * tree that is equal to x is returned, null otherwise.
+	 */
+	public T get(T x) {
+		Entry<T> node = find(x, root);
+		if (node == nullNode)
+			return null;
+		return node.element;
+	}
+	
+	private void storeInArray(Entry<T> node, Comparable[] arr) {
+		// TODO Auto-generated method stub
+		if (node != nullNode) {
+			storeInArray((Entry<T>) node.left, arr);
+			if (node.element != null) {
+				arr[index++] = node.element;
+			}
+			storeInArray((Entry<T>) node.right, arr);
+		}
 	}
 
 	public void printTree() {

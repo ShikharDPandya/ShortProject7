@@ -2,7 +2,12 @@
 /** Starter code for AVL Tree
  */
 package cs6301.g40;
-
+/*
+ * Group members:
+Mukesh Kumar(mxk170430)
+Shikhar Pandya (sdp170030)
+Arijeet Roy (axr165030)
+*/
 import java.util.Comparator;
 import java.util.Deque;
 import java.util.ArrayDeque;
@@ -29,10 +34,10 @@ public class AVLTree<T extends Comparable<? super T>> extends BST<T> {
 	
     }
     
-    public void leftRotate(Entry about){
-        Deque<Object> stack = new ArrayDeque<>();
-    //    BST.Entry about = EntryMap.get(a.getElement());
-        find(root,(T)about.getElement(),stack);
+    public void leftRotate(Entry about,Deque<Object> stack){
+    //    Deque<Object> stack = new ArrayDeque<>();
+   
+   //     find(root,(T)about.getElement(),stack);
         Entry<T> parent = (Entry<T>) stack.pop();
         Entry<T> temp1 = (Entry<T>) about.getLeft();
         about.setLeft(parent);
@@ -61,9 +66,9 @@ public class AVLTree<T extends Comparable<? super T>> extends BST<T> {
         }
     }
     
-    public void rightRotate(Entry about){
-        Deque<Object> stack = new ArrayDeque<>();
-        find(root,(T)about.getElement(),stack);
+    public void rightRotate(Entry about,Deque<Object> stack){
+       // Deque<Object> stack = new ArrayDeque<>();
+       // find(root,(T)about.getElement(),stack);
         Entry<T> parent = (AVLTree.Entry<T>) stack.pop();
         Entry<T> temp1 = (AVLTree.Entry<T>) about.getRight();
         about.setRight(parent);
@@ -136,13 +141,16 @@ public class AVLTree<T extends Comparable<? super T>> extends BST<T> {
                 if(lrChild!=null) lrht=lrChild.getHeight();
                 
                 if((llht - lrht) > 0){
-                    rightRotate(lChild);
+                    stack.push(node);
+                    rightRotate(lChild,stack);
                 }
                 else if ((lrht - llht)>0){
-                    leftRotate(lrChild);
-                    Deque<Object> st1 = new ArrayDeque<>();
-                    find(root,lrChild.getElement(),st1);
-                    balanceTree(lrChild.getElement(),st1);
+                    stack.push(node);
+                    stack.push(lChild);
+                    leftRotate(lrChild,stack);
+                   // Deque<Object> st1 = new ArrayDeque<>();
+                   // find(root,lrChild.getElement(),st1);
+                    balanceTree(lrChild.getElement(),stack);
                 }
                 break;
             }
@@ -155,13 +163,16 @@ public class AVLTree<T extends Comparable<? super T>> extends BST<T> {
                 if(rlChild!=null) rlht=rlChild.getHeight();
                 if(rrChild!=null) rrht=rrChild.getHeight();
                 if((rrht - rlht) > 0){
-                    leftRotate(rChild);
+                    stack.push(node);
+                    leftRotate(rChild,stack);
                 }
                 else if ((rlht - rrht)>0){
-                    rightRotate(rlChild);
-                    Deque<Object> st1 = new ArrayDeque<>();
-                    find(root,rlChild.getElement(),st1);
-                    balanceTree(rlChild.getElement(),st1);
+                    stack.push(node);
+                    stack.push(rChild);
+                    rightRotate(rlChild,stack);
+                   // Deque<Object> st1 = new ArrayDeque<>();
+                   // find(root,rlChild.getElement(),st1);
+                    balanceTree(rlChild.getElement(),stack);
                 }
                 break;
             }
@@ -186,11 +197,12 @@ public class AVLTree<T extends Comparable<? super T>> extends BST<T> {
     }
     
     
-    public void delete(T x){
+    public T remove(T x){
         T y = super.remove(x);
         Deque<Object> st1 = new ArrayDeque<>();
         Entry<T> t = (AVLTree.Entry<T>) find(root,y,st1);
         balanceTree(y,st1);
+        return y;
     }
     
     public static void main(String [] args){
@@ -204,6 +216,9 @@ public class AVLTree<T extends Comparable<? super T>> extends BST<T> {
         avl.insert(7);
         avl.insert(5);
         avl.insert(3);
+        
+        avl.remove(25);
+        avl.remove(5);
     }
 }
 

@@ -12,12 +12,12 @@ Arijeet Roy (axr165030)
 import java.util.Comparator;
 import java.util.Scanner;
 
-import cs6301.g40.RedBlackTree.Entry;
 
 public class SplayTree<T extends Comparable<? super T>> extends BST<T> {
 	Entry<T> nullNode;
 	Entry<T> root;
 	int size;
+	int index = 0;
 
 	static class Entry<T> extends BST.Entry<T> {
 		Entry<T> parent;
@@ -221,7 +221,7 @@ public class SplayTree<T extends Comparable<? super T>> extends BST<T> {
 	}
 
 	public static void main(String[] args) {
-		BST<Integer> t = new SplayTree<>();
+		SplayTree<Integer> t = new SplayTree<>();
 		Scanner in = new Scanner(System.in);
 		while (in.hasNext()) {
 			int x = in.nextInt();
@@ -233,11 +233,58 @@ public class SplayTree<T extends Comparable<? super T>> extends BST<T> {
 				System.out.print("Remove " + x + " : ");
 				t.remove(-x);
 				t.printTree();
+			} else {
+				Comparable[] arr = t.toArray();
+				System.out.print("Final: ");
+				for (int i = 0; i < t.size; i++) {
+					System.out.print(arr[i] + " ");
+				}
+				System.out.println();
+				return;
 			}
 		}
 		in.close();
 	}
 
+	public Comparable[] toArray() {
+		Comparable[] arr = new Comparable[size];
+		/* write code to place elements in array here */
+		storeInArray(root, arr);
+		return arr;
+	}
+
+	/**
+	 * TO DO: Is x contained in tree?
+	 */
+	public boolean contains(T x) {
+		Entry<T> node = find(x, root);
+		if (node == nullNode)
+			return false;
+		return true;
+	}
+	
+	/**
+	 * TO DO: Is there an element that is equal to x in the tree? Element in
+	 * tree that is equal to x is returned, null otherwise.
+	 */
+	public T get(T x) {
+		Entry<T> node = find(x, root);
+		if (node == nullNode)
+			return null;
+		return node.element;
+	}
+	
+	private void storeInArray(Entry<T> node, Comparable[] arr) {
+		// TODO Auto-generated method stub
+		if (node != nullNode) {
+			storeInArray((Entry<T>) node.left, arr);
+			if (node.element != null) {
+				arr[index++] = node.element;
+			}
+			storeInArray((Entry<T>) node.right, arr);
+		}
+	}
+	
 	public void printTree() {
 		System.out.print("[" + size + "]");
 		printTree(root);
