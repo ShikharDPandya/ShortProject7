@@ -1,6 +1,13 @@
 
 /** Starter code for Red-Black Tree
  */
+
+/*
+ * Group members:
+Mukesh Kumar(mxk170430)
+Shikhar Pandya (sdp170030)
+Arijeet Roy (axr165030)
+*/
 package cs6301.g40;
 
 import java.util.Comparator;
@@ -194,34 +201,34 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BST<T> {
 	//function to remove a node by finding the inorder successor of a node and then
 	//then fixing the tree structure 
 	public T remove(T x) {
-		Entry<T> z = find(x, root);
-		if (z == nullNode)
+		Entry<T> node = find(x, root);
+		if (node == nullNode)
 			return null;
 		Entry<T> temp;
-		Entry<T> inOrderSucc;
-		boolean tempColor = false;
+		Entry<T> inOrderSucc = node;
+		boolean tempColor = inOrderSucc.isRed;
 
-		if (z.left == nullNode) {
-			temp = (Entry<T>) z.right;
-			replace(z, (Entry<T>) z.right);
-		} else if (z.right == nullNode) {
-			temp = (Entry<T>) z.left;
-			replace(z, (Entry<T>) z.left);
+		if (node.left == nullNode) {
+			temp = (Entry<T>) node.right;
+			replace(node, (Entry<T>) node.right);
+		} else if (node.right == nullNode) {
+			temp = (Entry<T>) node.left;
+			replace(node, (Entry<T>) node.left);
 		} else {
-			inOrderSucc = inOrderSuccessor((Entry<T>) z.right);
+			inOrderSucc = inOrderSuccessor((Entry<T>) node.right);
 			tempColor = inOrderSucc.isRed;
 			temp = (Entry<T>) inOrderSucc.right;
-			if (inOrderSucc.parent == z)
+			if (inOrderSucc.parent == node)
 				temp.parent = inOrderSucc;
 			else {
 				replace(inOrderSucc, (Entry<T>) inOrderSucc.right);
-				inOrderSucc.right = z.right;
+				inOrderSucc.right = node.right;
 				((Entry<T>) inOrderSucc.right).parent = inOrderSucc;
 			}
-			replace(z, inOrderSucc);
-			inOrderSucc.left = z.left;
+			replace(node, inOrderSucc);
+			inOrderSucc.left = node.left;
 			((Entry<T>) inOrderSucc.left).parent = inOrderSucc;
-			inOrderSucc.isRed = z.isRed;
+			inOrderSucc.isRed = node.isRed;
 		}
 		if (!tempColor)
 			fixStructureAfterDelete(temp);
@@ -308,7 +315,7 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BST<T> {
 	}
 
 	public static void main(String[] args) {
-		RedBlackTree<Integer> t = new RedBlackTree<>();
+		BST<Integer> t = new RedBlackTree<>();
 		Scanner in = new Scanner(System.in);
 		while (in.hasNext()) {
 			int x = in.nextInt();

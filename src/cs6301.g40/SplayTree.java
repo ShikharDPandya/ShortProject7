@@ -2,12 +2,17 @@
  */
 package cs6301.g40;
 
+/*
+ * Group members:
+Mukesh Kumar(mxk170430)
+Shikhar Pandya (sdp170030)
+Arijeet Roy (axr165030)
+*/
+
 import java.util.Comparator;
 import java.util.Scanner;
 
 import cs6301.g40.RedBlackTree.Entry;
-
-
 
 public class SplayTree<T extends Comparable<? super T>> extends BST<T> {
 	Entry<T> nullNode;
@@ -29,7 +34,7 @@ public class SplayTree<T extends Comparable<? super T>> extends BST<T> {
 		root = nullNode;
 	}
 
-	//add a node to the splay tree and call the splay function
+	// add a node to the splay tree and call the splay function
 	public boolean add(T x) {
 		Entry<T> temp = root;
 		boolean isAdded = false;
@@ -71,7 +76,7 @@ public class SplayTree<T extends Comparable<? super T>> extends BST<T> {
 		return isAdded;
 	}
 
-	//perform splay in the node
+	// perform splay in the node
 	private void performSplay(Entry<T> node) {
 		// TODO Auto-generated method stub
 		while (node.parent != nullNode) {
@@ -128,32 +133,33 @@ public class SplayTree<T extends Comparable<? super T>> extends BST<T> {
 		return nullNode;
 	}
 
-	//remove a node from the tree and perform the splay function
+	// remove a node from the tree and perform the splay function
 	public T remove(T x) {
-		Entry<T> z = find(x, root);
-		if (z == nullNode)
+		Entry<T> node = find(x, root);
+		if (node == nullNode)
 			return null;
+		performSplay(node);
 		Entry<T> temp;
-		Entry<T> inOrderSucc;
+		Entry<T> inOrderSucc = node;
 
-		if (z.left == nullNode) {
-			temp = (Entry<T>) z.right;
-			replace(z, (Entry<T>) z.right);
-		} else if (z.right == nullNode) {
-			temp = (Entry<T>) z.left;
-			replace(z, (Entry<T>) z.left);
+		if (node.left == nullNode) {
+			temp = (Entry<T>) node.right;
+			replace(node, (Entry<T>) node.right);
+		} else if (node.right == nullNode) {
+			temp = (Entry<T>) node.left;
+			replace(node, (Entry<T>) node.left);
 		} else {
-			inOrderSucc = inOrderSuccessor((Entry<T>) z.right);
+			inOrderSucc = inOrderSuccessor((Entry<T>) node.right);
 			temp = (Entry<T>) inOrderSucc.right;
-			if (inOrderSucc.parent == z)
+			if (inOrderSucc.parent == node)
 				temp.parent = inOrderSucc;
 			else {
 				replace(inOrderSucc, (Entry<T>) inOrderSucc.right);
-				inOrderSucc.right = z.right;
+				inOrderSucc.right = node.right;
 				((Entry<T>) inOrderSucc.right).parent = inOrderSucc;
 			}
-			replace(z, inOrderSucc);
-			inOrderSucc.left = z.left;
+			replace(node, inOrderSucc);
+			inOrderSucc.left = node.left;
 			((Entry<T>) inOrderSucc.left).parent = inOrderSucc;
 		}
 		size--;
@@ -215,7 +221,7 @@ public class SplayTree<T extends Comparable<? super T>> extends BST<T> {
 	}
 
 	public static void main(String[] args) {
-		SplayTree<Integer> t = new SplayTree<>();
+		BST<Integer> t = new SplayTree<>();
 		Scanner in = new Scanner(System.in);
 		while (in.hasNext()) {
 			int x = in.nextInt();
